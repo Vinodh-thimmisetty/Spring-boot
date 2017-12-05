@@ -1,4 +1,4 @@
-package com.vinodh.springboot.application;
+package com.vinodh.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
