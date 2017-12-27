@@ -3,6 +3,8 @@ package com.vinodh.springboot;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -13,7 +15,12 @@ import com.vinodh.springboot.repository.AppUserRepository;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.vinodh.springboot.repository")
-public class Application {
+public class Application extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder springApplication) {
+		return springApplication.sources(Application.class);
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
