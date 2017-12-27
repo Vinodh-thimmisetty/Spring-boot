@@ -3,6 +3,8 @@ package com.vinodh.springboot.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.hateoas.ResourceSupport;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class AppUser {
+public class AppUser extends ResourceSupport {
 
 	@Id
 	private Long appUserId;
