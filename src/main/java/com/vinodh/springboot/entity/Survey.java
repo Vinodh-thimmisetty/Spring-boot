@@ -1,5 +1,4 @@
 package com.vinodh.springboot.entity;
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -26,8 +25,7 @@ public class Survey {
 	@Column(name = "SURVEY_ID", columnDefinition = "Unique Id Generated per PRODUCT", nullable = false, length = 50, unique = true, updatable = false)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRODUCT_SURVEY_SEQ")
 	@SequenceGenerator(schema = "VINODH", sequenceName = "PRODUCT_SURVEY_SEQ", initialValue = 1, name = "PRODUCT_SURVEY_SEQ", allocationSize = 1)
-
-	private long surveyId;
+ 	private long surveyId;
 
 	@Column(name = "PROD_ID", nullable = false)
 	private long prodId;

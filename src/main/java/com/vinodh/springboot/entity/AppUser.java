@@ -1,5 +1,8 @@
 package com.vinodh.springboot.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -8,8 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,10 +55,19 @@ public class AppUser {
 	@Embedded
 	private Address address;
 
-	@OneToMany(mappedBy = "customer", targetEntity = Orders.class, fetch = FetchType.EAGER)
-	private Orders orders;
+	// One-to-One Mapping Sample
+	@OneToOne(mappedBy = "customer", targetEntity = Parents.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@Fetch(FetchMode.SELECT)
+	private Parents parents;
 
-	@OneToMany(mappedBy = "customer", targetEntity = Products.class, fetch = FetchType.EAGER)
-	private Products products;
+	// One-to-Many Mapping Sample
+	@OneToMany(mappedBy = "customer", targetEntity = Orders.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@Fetch(FetchMode.SELECT)
+	private List<Orders> orders;
+
+	// One-to-Many Mapping Sample
+	@OneToMany(mappedBy = "customer", targetEntity = Products.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@Fetch(FetchMode.SELECT)
+	private List<Products> products;
 
 }

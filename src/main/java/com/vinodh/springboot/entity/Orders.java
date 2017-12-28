@@ -1,5 +1,4 @@
 package com.vinodh.springboot.entity;
-
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +17,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,11 +39,9 @@ public class Orders {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDERS_SEQ")
 	@SequenceGenerator(schema = "VINODH", sequenceName = "ORDERS_SEQ", initialValue = 1, name = "ORDERS_SEQ", allocationSize = 1)
 	private long orderId;
-	@Column(name = "CUST_ID")
-	private long appUserId;
 	@Column(name = "TOTAL_PRICE", precision = 2)
 	private double totPrice;
-	@Column(name = "OREDER_DESC")
+	@Column(name = "ORDER_DESC")
 	private String orderDesc;
 	@Column(name = "ORDER_DATE")
 	private Date orderDt;
@@ -49,19 +51,22 @@ public class Orders {
 	//            E.g: Performing CRUD operations on the Orders entity and want to propagate the same operations to the child OrderInvoice object
 	// mappedBy = reference variable in joined Object 
 	// targetEntity = To which entity mapping is done
-	@OneToOne(optional = false, cascade = CascadeType.ALL, mappedBy = "order", targetEntity = OrderInvoice.class)
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "order", targetEntity = OrderInvoice.class,fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SELECT)
 	private OrderInvoice invoice;
 
 	// Here Order is OWNING Side and maps customer user id as foreign key
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "appUserId", referencedColumnName = "appUserId")
+	@JoinColumn(name = "CUST_ID", referencedColumnName = "CUST_ID")
+	@JsonIgnore
 	private AppUser customer;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "OrderDetails", 
+	@JoinTable(name = "ORDER_DETAIL", schema="VINODH",
 			   joinColumns = @JoinColumn(
-					   				name = "orderId", referencedColumnName = "prodId"),
+					   				name = "ORDER_ID", referencedColumnName = "ORDER_ID"),
 			   inverseJoinColumns = @JoinColumn(
-					   				name = "prodId", referencedColumnName = "orderId"))
+					   				name = "PROD_ID", referencedColumnName = "PROD_ID"))
+	@JsonIgnore
 	private List<Products> productsList;
 }
