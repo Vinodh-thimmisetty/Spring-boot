@@ -32,7 +32,7 @@ public class Parents implements java.io.Serializable {
 	private static final long serialVersionUID = 222056424508901935L;
 
 	@Id
-	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "parents"))
+	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "customer"))
 	@GeneratedValue(generator = "generator")
 	@Column(name = "CUST_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	@JsonIgnore

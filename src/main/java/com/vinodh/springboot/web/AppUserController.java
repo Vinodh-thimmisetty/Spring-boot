@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,6 +106,34 @@ public class AppUserController {
 		return ResponseEntity.ok(appUserService.getUserById(appuserId).getProducts());
 	}
 
+	@PostMapping("/addNewCustomer")
+	public ResponseEntity<AppUser> addNewCustomer(@RequestBody AppUser appUser) {
+		return ResponseEntity.ok(appUserService.saveCustomer(appUser));
+	}
+	
+	@PostMapping("/addNewParents")
+	public ResponseEntity<Parents> addNewParents(@RequestBody Parents parents) {
+		return ResponseEntity.ok(appUserService.saveParents(parents));
+	}
+
+	@PostMapping("/addNewProducts")
+	public ResponseEntity<Products> addNewProducts(@RequestBody Products products) {
+		return ResponseEntity.ok(appUserService.saveProduct(products));
+	}
+
+	@PostMapping("/addNewOrders")
+	public ResponseEntity<Orders> addNewOrders(@RequestBody Orders orders) {
+		return ResponseEntity.ok(appUserService.saveOrder(orders));
+	}
+
+	/**
+	 * 
+	 * HATEOS Hyperlinks Implementations
+	 * 
+	 * 
+	 * @param appUser
+	 * @return
+	 */
 	private Resource<AppUser> buildCustomerResources(AppUser appUser) {
 		Resource<AppUser> resource = new Resource<>(appUser);
 		// Link to Customers Entity
