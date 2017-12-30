@@ -17,6 +17,9 @@
 	<logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
 		<appender-ref ref="Console-Appender" />
 	</logger>
+	<logger name="org.hibernate" level="INFO" additivity="false">
+		<appender-ref ref="Console-Appender" />
+	</logger>
 	<logger name="com.ibatis" additivity="false">
 		<appender-ref ref="Console-Appender" />
 	</logger>

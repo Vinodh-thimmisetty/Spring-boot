@@ -17,6 +17,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +34,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(schema = "VINODH", name = "CUSTOMER")
+@JsonInclude(content = Include.NON_NULL)
 public class AppUser {
 
 	@Id
@@ -58,16 +64,22 @@ public class AppUser {
 	// One-to-One Mapping Sample
 	@OneToOne(mappedBy = "customer", targetEntity = Parents.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Parents parents;
 
 	// One-to-Many Mapping Sample
 	@OneToMany(mappedBy = "customer", targetEntity = Orders.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<Orders> orders;
 
 	// One-to-Many Mapping Sample
 	@OneToMany(mappedBy = "customer", targetEntity = Products.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<Products> products;
 
 }
