@@ -35,7 +35,7 @@ public class Parents implements java.io.Serializable {
 	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "customer"))
 	@GeneratedValue(generator = "generator")
 	@Column(name = "CUST_ID", unique = true, nullable = false, precision = 22, scale = 0)
-	@JsonIgnore
+	//@JsonIgnore
 	private Long appUserId;
 	@OneToOne(optional = false)
 	@PrimaryKeyJoinColumn

@@ -112,8 +112,11 @@ public class AppUserController {
 	}
 	
 	@PostMapping("/addNewParents")
-	public ResponseEntity<Parents> addNewParents(@RequestBody Parents parents) {
-		return ResponseEntity.ok(appUserService.saveParents(parents));
+	public ResponseEntity<AppUser> addNewParents(@RequestBody Parents parents) {
+		AppUser appUser = appUserService.getUserById(parents.getAppUserId());
+		parents.setCustomer(appUser);
+		appUser.setParents(parents);
+		return ResponseEntity.ok(appUserService.saveCustomer(appUser));
 	}
 
 	@PostMapping("/addNewProducts")
