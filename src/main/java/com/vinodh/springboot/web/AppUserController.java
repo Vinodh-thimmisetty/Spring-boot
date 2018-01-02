@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vinodh.springboot.domain.CustomerDTO;
+import com.vinodh.springboot.domain.ParentsDTO;
 import com.vinodh.springboot.entity.AppUser;
 import com.vinodh.springboot.entity.Orders;
 import com.vinodh.springboot.entity.Parents;
@@ -72,8 +74,9 @@ public class AppUserController {
 	}
 
 	@GetMapping("/findUser/{appuserId:[0-9]+}")
-	public ResponseEntity<AppUser> getUserById(@PathVariable("appuserId") Long appuserId) {
-		return ResponseEntity.ok(appUserService.getUserById(appuserId));
+	public ResponseEntity<CustomerDTO> getUserById(@PathVariable("appuserId") Long appuserId) {
+		AppUser appUser = appUserService.getUserById(appuserId);
+		return ResponseEntity.ok(new CustomerDTO(appUser));
 	}
 
 	@GetMapping("/findUser/hateos/{appuserId:[0-9]+}")
@@ -106,17 +109,24 @@ public class AppUserController {
 		return ResponseEntity.ok(appUserService.getUserById(appuserId).getProducts());
 	}
 
+	/*@PostMapping("/addNewCustomer")
+	public ResponseEntity<CustomerDTO> addNewCustomer(@RequestBody CustomerDTO customerInfo) {
+		AppUser appUser = appUserService.saveCustomer(new AppUser(customerInfo));
+		return ResponseEntity.ok(new CustomerDTO(appUser));
+	}*/
 	@PostMapping("/addNewCustomer")
 	public ResponseEntity<AppUser> addNewCustomer(@RequestBody AppUser appUser) {
 		return ResponseEntity.ok(appUserService.saveCustomer(appUser));
 	}
-	
+
 	@PostMapping("/addNewParents")
-	public ResponseEntity<AppUser> addNewParents(@RequestBody Parents parents) {
+	public ResponseEntity<CustomerDTO> addNewParents(@RequestBody ParentsDTO parentsDTO) {
+		Parents parents = new Parents(parentsDTO);
 		AppUser appUser = appUserService.getUserById(parents.getAppUserId());
 		parents.setCustomer(appUser);
 		appUser.setParents(parents);
-		return ResponseEntity.ok(appUserService.saveCustomer(appUser));
+		appUser = appUserService.saveCustomer(appUser);
+		return ResponseEntity.ok(new CustomerDTO(appUser));
 	}
 
 	@PostMapping("/addNewProducts")

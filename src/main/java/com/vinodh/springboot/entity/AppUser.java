@@ -1,6 +1,7 @@
 package com.vinodh.springboot.entity;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,20 +23,20 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.vinodh.springboot.domain.CustomerDTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//@AllArgsConstructor
+//@Builder
 @Entity
 @Table(schema = "VINODH", name = "CUSTOMER")
 @JsonInclude(content = Include.NON_NULL)
 public class AppUser {
+ 
 
 	@Id
 	@Column(name = "CUST_ID", columnDefinition = "Unique Id Generated per Customer", nullable = false, length = 50, unique = true, updatable = false)
@@ -81,5 +82,20 @@ public class AppUser {
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<Products> products;
+	
+	
+	/* Copy Constructor to fetch Convert DTO to Entity */
+	public AppUser(CustomerDTO customerInfo) {  
+		if (Objects.nonNull(customerInfo)) {
+			this.firstName = customerInfo.getFirstName();
+			this.lastName = customerInfo.getLastName();
+			this.userName = customerInfo.getUserName();
+			this.userEmail = customerInfo.getUserEmail();
+			this.userPhone = customerInfo.getUserPhone();
+
+			this.address = new Address(customerInfo.getAddress());
+			this.parents = new Parents(customerInfo.getParents());
+		}
+	}
 
 }
