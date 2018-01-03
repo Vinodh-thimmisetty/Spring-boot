@@ -1,6 +1,8 @@
 package com.vinodh.springboot.entity;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
@@ -22,16 +25,15 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.vinodh.springboot.domain.CustomerDTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+// @AllArgsConstructor
+// @Builder
 @Entity
 @Table(schema = "VINODH", name = "CUSTOMER")
 @JsonInclude(content = Include.NON_NULL)
@@ -81,5 +83,31 @@ public class AppUser {
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<Products> products;
+
+	/* Copy Constructor to fetch Convert DTO to Entity */
+	public AppUser(CustomerDTO customerInfo) {
+		if (Objects.nonNull(customerInfo)) {
+			this.firstName = customerInfo.getFirstName();
+			this.lastName = customerInfo.getLastName();
+			this.userName = customerInfo.getUserName();
+			this.userEmail = customerInfo.getUserEmail();
+			this.userPhone = customerInfo.getUserPhone();
+
+			this.address = new Address(customerInfo.getAddress());
+
+			if (Objects.nonNull(customerInfo.getParents())) {
+				this.parents = new Parents(customerInfo.getParents());
+			}
+
+			if (CollectionUtils.isNotEmpty(customerInfo.getOrders())) {
+				this.orders = customerInfo.getOrders().stream().map(eachOrder -> new Orders(eachOrder))
+						.collect(Collectors.toList());
+			}
+			if (CollectionUtils.isNotEmpty(customerInfo.getOrders())) {
+				this.products = customerInfo.getProducts().stream().map(eachProduct -> new Products(eachProduct))
+						.collect(Collectors.toList());
+			}
+		}
+	}
 
 }

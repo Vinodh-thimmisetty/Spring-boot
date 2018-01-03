@@ -2,6 +2,7 @@ package com.vinodh.springboot.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,16 +17,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vinodh.springboot.domain.ProductsDTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//@AllArgsConstructor
+//@Builder
 @Entity
 @Table(schema = "VINODH", name = "PRODUCTS")
 public class Products {
@@ -53,5 +53,16 @@ public class Products {
 	@JoinColumn(name = "CUST_ID", referencedColumnName = "CUST_ID")
 	@JsonIgnore
 	private AppUser customer;
+
+	/* Copy Constructor to fetch Convert DTO to Entity */
+	public Products(ProductsDTO productsDTO) {
+		if (Objects.nonNull(productsDTO)) { 
+			this.prodId = productsDTO.getProdId();
+			this.prodName = productsDTO.getProdName();
+			this.prodDescription = productsDTO.getProdDescription();
+			this.price = productsDTO.getPrice();
+
+		}
+	}
 
 }

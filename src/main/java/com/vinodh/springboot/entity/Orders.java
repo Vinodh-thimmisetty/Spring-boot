@@ -1,6 +1,7 @@
 package com.vinodh.springboot.entity;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vinodh.springboot.domain.OrdersDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,4 +71,14 @@ public class Orders {
 					   				name = "PROD_ID", referencedColumnName = "PROD_ID"))
 	@JsonIgnore
 	private List<Products> productsList;
+	
+	/* Copy Constructor to fetch Convert DTO to Entity */
+	public Orders(OrdersDTO ordersDTO) {
+		if (Objects.nonNull(ordersDTO)) { 
+			this.orderId = ordersDTO.getOrderId();
+			this.totPrice = ordersDTO.getTotPrice();
+			this.orderDesc = ordersDTO.getOrderDesc();
+			this.orderDt = ordersDTO.getOrderDt();
+		}
+	}
 }

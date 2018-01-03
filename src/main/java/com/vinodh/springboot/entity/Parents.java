@@ -1,5 +1,7 @@
 package com.vinodh.springboot.entity;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,19 +14,18 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vinodh.springboot.domain.ParentsDTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//@AllArgsConstructor
+//@Builder
 @Entity
 @Table(schema = "VINODH", name = "PARENTS")
-public class Parents implements java.io.Serializable {
+public class Parents implements java.io.Serializable { 
 
 	/**
 	 * 
@@ -35,7 +36,7 @@ public class Parents implements java.io.Serializable {
 	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "customer"))
 	@GeneratedValue(generator = "generator")
 	@Column(name = "CUST_ID", unique = true, nullable = false, precision = 22, scale = 0)
-	@JsonIgnore
+	//@JsonIgnore
 	private Long appUserId;
 	@OneToOne(optional = false)
 	@PrimaryKeyJoinColumn
@@ -49,4 +50,15 @@ public class Parents implements java.io.Serializable {
 	private String motherName;
 	@Column(name = "MOTHER_PHONE", precision = 22, scale = 0)
 	private Long motherPhone;
+	
+	/* Copy Constructor to fetch Convert DTO to Entity */
+	public Parents(ParentsDTO parentsDTO) {
+		if (Objects.nonNull(parentsDTO)) {
+			this.appUserId = parentsDTO.getCustomerId();
+			this.fatherName = parentsDTO.getFatherName();
+			this.fatherPhone = parentsDTO.getFatherPhone();
+			this.motherName = parentsDTO.getMotherName();
+			this.motherPhone = parentsDTO.getMotherPhone(); 
+		}
+	}
 }

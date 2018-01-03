@@ -5,7 +5,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +26,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.vinodh.springboot.domain.CustomerDTO;
+import com.vinodh.springboot.domain.OrdersDTO;
+import com.vinodh.springboot.domain.ParentsDTO;
+import com.vinodh.springboot.domain.ProductsDTO;
 import com.vinodh.springboot.entity.AppUser;
 import com.vinodh.springboot.entity.Orders;
 import com.vinodh.springboot.entity.Parents;
@@ -44,17 +53,18 @@ public class AppUserController {
 	EntityLinks entityLinks;
 
 	@GetMapping(path = "/findAllUsers")
-	public ResponseEntity<List<AppUser>> getUsers() {
-		return ResponseEntity.ok(appUserService.getUsers());
+	public ResponseEntity<List<CustomerDTO>> getUsers() {
+		return ResponseEntity
+				.ok(appUserService.getUsers().stream().map(x -> new CustomerDTO(x)).collect(Collectors.toList()));
 	}
 
 	@GetMapping(path = "/findAllUsers/hateos", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Resource<AppUser>>> getUsersHateaos() {
+	public ResponseEntity<List<Resource<CustomerDTO>>> getUsersHateaos() {
 		log.info("Buildng Resource Links");
 		List<AppUser> appUsers = appUserService.getUsers();
-		List<Resource<AppUser>> resources = new ArrayList<>();
+		List<Resource<CustomerDTO>> resources = new ArrayList<>();
 		for (AppUser appUser : appUsers) {
-			resources.add(buildCustomerResources(appUser));
+			resources.add(buildCustomerResources(new CustomerDTO(appUser)));
 		}
 
 		return ResponseEntity.ok(resources);
@@ -72,8 +82,12 @@ public class AppUserController {
 	}
 
 	@GetMapping("/findUser/{appuserId:[0-9]+}")
-	public ResponseEntity<AppUser> getUserById(@PathVariable("appuserId") Long appuserId) {
-		return ResponseEntity.ok(appUserService.getUserById(appuserId));
+	public ResponseEntity<Resource<CustomerDTO>> getUserById(@PathVariable("appuserId") Long appuserId) {
+		AppUser appUser = appUserService.getUserById(appuserId);
+		if (Objects.isNull(appUser)) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return ResponseEntity.ok(buildCustomerResources(new CustomerDTO(appUser)));
 	}
 
 	@GetMapping("/findUser/hateos/{appuserId:[0-9]+}")
@@ -107,23 +121,65 @@ public class AppUserController {
 	}
 
 	@PostMapping("/addNewCustomer")
-	public ResponseEntity<AppUser> addNewCustomer(@RequestBody AppUser appUser) {
-		return ResponseEntity.ok(appUserService.saveCustomer(appUser));
+	public ResponseEntity<CustomerDTO> addNewCustomer(@RequestBody CustomerDTO customerInfo) {
+		AppUser appUser = new AppUser(customerInfo);
+
+		/* Save Parents */
+		if (Objects.nonNull(customerInfo.getParents())) {
+			Parents parents = new Parents(customerInfo.getParents());
+			parents.setCustomer(appUser);
+			appUser.setParents(parents);
+		}
+		/* Save Products */
+		if (CollectionUtils.isNotEmpty(customerInfo.getProducts())) {
+			List<Products> productsList = customerInfo.getProducts().stream()
+					.map(eachProduct -> new Products(eachProduct)).collect(Collectors.toList());
+			productsList.stream().forEach(x -> x.setCustomer(appUser));
+			appUser.setProducts(productsList);
+		}
+		/* Save Orders */
+		if (CollectionUtils.isNotEmpty(customerInfo.getOrders())) {
+			List<Orders> ordersList = customerInfo.getOrders().stream().map(eachOrder -> new Orders(eachOrder))
+					.collect(Collectors.toList());
+			ordersList.stream().forEach(x -> x.setCustomer(appUser));
+			appUser.setOrders(ordersList);
+		}
+		return ResponseEntity.ok(new CustomerDTO(appUserService.saveCustomer(appUser)));
 	}
-	
+
 	@PostMapping("/addNewParents")
-	public ResponseEntity<Parents> addNewParents(@RequestBody Parents parents) {
-		return ResponseEntity.ok(appUserService.saveParents(parents));
+	public ResponseEntity<CustomerDTO> addNewParents(@RequestBody ParentsDTO parentsDTO) {
+		Parents parents = new Parents(parentsDTO);
+		AppUser appUser = appUserService.getUserById(parents.getAppUserId());
+		parents.setCustomer(appUser);
+		appUser.setParents(parents);
+		return ResponseEntity.ok(new CustomerDTO(appUserService.saveCustomer(appUser)));
 	}
 
-	@PostMapping("/addNewProducts")
-	public ResponseEntity<Products> addNewProducts(@RequestBody Products products) {
-		return ResponseEntity.ok(appUserService.saveProduct(products));
+	@PostMapping("/addNewProducts/{customerId}")
+	public ModelAndView addNewProducts(@RequestBody List<ProductsDTO> productDTOs,
+			@PathVariable("customerId") Long customerId) {
+		List<Products> productsList = productDTOs.stream().map(eachProduct -> new Products(eachProduct))
+				.collect(Collectors.toList());
+		AppUser appUser = appUserService.getUserById(customerId);
+		productsList.stream().forEach(x -> x.setCustomer(appUser));
+		appUser.setProducts(productsList);
+		appUserService.saveCustomer(appUser);
+		return new ModelAndView("redirect:/user/findUser/" + customerId);
 	}
 
-	@PostMapping("/addNewOrders")
-	public ResponseEntity<Orders> addNewOrders(@RequestBody Orders orders) {
-		return ResponseEntity.ok(appUserService.saveOrder(orders));
+	@PostMapping("/addNewOrders/{customerId}")
+	public ModelAndView addNewOrders(@RequestBody List<OrdersDTO> orderDTOs,
+			@PathVariable("customerId") Long customerId) {
+
+		List<Orders> ordersList = orderDTOs.stream().map(eachOrder -> new Orders(eachOrder))
+				.collect(Collectors.toList());
+		AppUser appUser = appUserService.getUserById(customerId);
+		ordersList.stream().forEach(x -> x.setCustomer(appUser));
+		appUser.setOrders(ordersList);
+		appUserService.saveCustomer(appUser);
+
+		return new ModelAndView("redirect:/user/findUser/" + customerId);
 	}
 
 	/**
@@ -134,17 +190,17 @@ public class AppUserController {
 	 * @param appUser
 	 * @return
 	 */
-	private Resource<AppUser> buildCustomerResources(AppUser appUser) {
-		Resource<AppUser> resource = new Resource<>(appUser);
+	private Resource<CustomerDTO> buildCustomerResources(CustomerDTO customer) {
+		Resource<CustomerDTO> resource = new Resource<>(customer);
 		// Link to Customers Entity
-		resource.add(linkTo(methodOn(AppUserController.class).getUserById(appUser.getAppUserId())).withSelfRel());
+		resource.add(linkTo(methodOn(AppUserController.class).getUserById(customer.getCustomerId())).withSelfRel());
 		// Link to Parents Entity
-		resource.add(linkTo(methodOn(AppUserController.class).findParent(appUser.getAppUserId())).withRel("Parents"));
+		resource.add(linkTo(methodOn(AppUserController.class).findParent(customer.getCustomerId())).withRel("Parents"));
 		// Link to Orders Entity
-		resource.add(linkTo(methodOn(AppUserController.class).findOrders(appUser.getAppUserId())).withRel("Orders"));
+		resource.add(linkTo(methodOn(AppUserController.class).findOrders(customer.getCustomerId())).withRel("Orders"));
 		// Link to Products Entity
 		resource.add(
-				linkTo(methodOn(AppUserController.class).findProducts(appUser.getAppUserId())).withRel("Products"));
+				linkTo(methodOn(AppUserController.class).findProducts(customer.getCustomerId())).withRel("Products"));
 		return resource;
 
 	}
