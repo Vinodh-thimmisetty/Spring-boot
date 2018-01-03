@@ -1,51 +1,69 @@
 package com.vinodh.springboot.domain;
 
-import java.util.Date;
+import java.util.Collection;
+import java.util.List;
 
-import com.vinodh.springboot.entity.AppUser;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class CustomerDetails {
+public class CustomerDetails implements UserDetails {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6789202248199262680L;
 
-	/* Customer */
-	private Long appUserId;
-	private String firstName;
-	private String lastName;
-	private String userName;
-	private String userEmail;
-	private String userPhone;
-	/* Address */
-	private String street;
-	private String town;
-	private String city;
-	private String county;
-	private String postcode;
-	private AppUser customer;
-	/* Parents */
-	private String fatherName;
-	private Long fatherPhone;
-	private String motherName;
-	private Long motherPhone;
-	/* Orders */
-	private long orderId;
-	private double totPrice;
-	private String orderDesc;
-	private Date orderDt;
-	/* Invoice */
-	private long invoiceId;
-	private double amountDue;
-	private Date orderRaisedDt;
-	private Date orderSettledDt;
-	private Date orderCancelledDt;
-	/* Products */
-	private long prodId;
-	private String prodName;
-	private String prodDescription;
-	private String price;
+	private List<String> customerRoles;
+	private CustomerDTO customerDTO;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		String roles = StringUtils.collectionToCommaDelimitedString(customerRoles);
+		return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
+	}
+
+	@Override
+	@Value("abcd1234")
+	public String getPassword() {
+		return null;
+	}
+
+	@Override
+	public String getUsername() {
+		return customerDTO.getUserName();
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return false;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return false;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return false;
+	}
+
 }

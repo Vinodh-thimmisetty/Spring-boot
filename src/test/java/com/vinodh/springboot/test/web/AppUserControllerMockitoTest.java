@@ -14,11 +14,13 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vinodh.springboot.domain.CustomerDTO;
 import com.vinodh.springboot.entity.AppUser;
 import com.vinodh.springboot.service.AppUserService;
 import com.vinodh.springboot.web.AppUserController;
@@ -44,25 +46,24 @@ public class AppUserControllerMockitoTest {
 	@Test
 	public void findAllUsers() throws Exception {
 		objectMapper = new ObjectMapper();
-		AppUser appUser = AppUser.builder().appUserId(100l).userName("Vinodh").userPhone("1212")
+		CustomerDTO customerDTO = CustomerDTO.builder().customerId(100l).userName("Vinodh").userPhone("1212")
 				.userEmail("vinodh5052@gmail.com").build();
-		Mockito.when(appUserService.getUsers())
-				.thenReturn(Stream.of(appUser).collect(Collectors.toList()));
-		List<AppUser> appUsers = objectMapper
-				.readValue(
-						mockMvc.perform(MockMvcRequestBuilders.get("/user/findAllUsers"))
-								.andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-								.getResponse().getContentAsString(),
-						new TypeReference<List<AppUser>>() {
-						});
-
-		Assert.assertEquals(1, appUsers.size());
+		AppUser appUser = new AppUser(customerDTO);
+		Mockito.when(appUserService.getUsers()).thenReturn(Stream.of(appUser).collect(Collectors.toList()));
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/user/findAllUsers"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$[0].userName").value("Vinodh"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$[0].userEmail")
-						.value("vinodh5052@gmail.com"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$[0].userEmail").value("vinodh5052@gmail.com"))
+				.andDo(MockMvcResultHandlers.print());
+
+		List<CustomerDTO> appUsers = objectMapper.readValue(mockMvc
+				.perform(MockMvcRequestBuilders.get("/user/findAllUsers"))
+				.andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString(),
+				new TypeReference<List<CustomerDTO>>() {
+				});
+
+		Assert.assertEquals(1, appUsers.size());
 
 	}
 
