@@ -46,8 +46,8 @@ public class AppUserServiceImpl implements AppUserService {
 	}
 
 	@Override
-	public List<AppUser> getUserByName(String appuserName) {
-		return appUserRepository.getUserByName("%" + appuserName + "%");
+	public List<AppUser> getUserByfirstName(String appuserName) {
+		return appUserRepository.getUserByfirstName("%" + appuserName + "%");
 	}
 
 	@Override
@@ -73,5 +73,10 @@ public class AppUserServiceImpl implements AppUserService {
 	@Override
 	public Parents saveParents(Parents parents) {
 		return parentsRepository.save(parents);
+	}
+
+	@Override
+	public AppUser getUserByName(String appuserName) {
+		return appUserRepository.getUserByName(appuserName);
 	}
 }

@@ -96,13 +96,13 @@ public class AppUserController {
 	}
 
 	@GetMapping("/findUser/{appuserName:[a-zA-Z]+}")
-	public ResponseEntity<List<AppUser>> getUserByName(@PathVariable("appuserName") String appuserName) {
-		return ResponseEntity.ok(appUserService.getUserByName(appuserName));
+	public ResponseEntity<CustomerDTO> getUserByName(@PathVariable("appuserName") String appuserName) {
+		return ResponseEntity.ok(new CustomerDTO(appUserService.getUserByName(appuserName)));
 	}
 
 	@GetMapping("/findUserbyName/{appuserName}")
-	public ResponseEntity<List<AppUser>> getUserByName1(@PathVariable("appuserName") String appuserName) {
-		return ResponseEntity.ok(appUserService.getUserByName(appuserName));
+	public ResponseEntity<CustomerDTO> getUserByName1(@PathVariable("appuserName") String appuserName) {
+		return ResponseEntity.ok(new CustomerDTO(appUserService.getUserByName(appuserName)));
 	}
 
 	@GetMapping("/findParent/{appuserId:[0-9]+}")

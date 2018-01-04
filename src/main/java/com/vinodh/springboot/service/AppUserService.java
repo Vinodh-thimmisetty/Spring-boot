@@ -16,7 +16,7 @@ public interface AppUserService {
 
 	AppUser getUserById(Long appuserId);
 
-	List<AppUser> getUserByName(String appuserName);
+	List<AppUser> getUserByfirstName(String appuserName);
 
 	Page<AppUser> getUsersWIthPagination(PageRequest pageRequest);
 
@@ -27,5 +27,7 @@ public interface AppUserService {
 	Orders saveOrder(Orders orders);
 
 	Parents saveParents(Parents parents);
+
+	AppUser getUserByName(String appuserName);
 
 }

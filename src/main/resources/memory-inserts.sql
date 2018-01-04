@@ -1,3 +1,9 @@
+/* Admin Information*/
+insert into VINODH.ADMIN_DETAILS
+		(ADMIN_ID, ADMIN_USERNAME,ADMIN_PASSWORD, ADMIN_FIRST_NAME, ADMIN_LAST_NAME,ADMIN_EMAIL,ADMIN_ROLE,APPLICATION_NAME)
+	values
+		(664246, 'vinodh5052','abcd1234', 'Vinodh Kumar', 'Thimmisetty', 'vinodh123@gmail.coom', 'Admin', 'Spring Boot');	
+
 /* Customer Information */
 insert into VINODH.CUSTOMER
         (CITY, COUNTRY, ZIP_CODE, STREET, TOWN, FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, USER_NAME, PHONE_NUMBER, CUST_ID) 

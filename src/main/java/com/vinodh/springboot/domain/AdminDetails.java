@@ -20,30 +20,30 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerDetails implements UserDetails {
+public class AdminDetails implements UserDetails {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6789202248199262680L;
 
-	private List<String> customerRoles;
-	private CustomerDTO customerDTO;
+	private List<String> adminRoles;
+	private AdminDTO adminInfo;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		String roles = StringUtils.collectionToCommaDelimitedString(customerRoles);
+		String roles = StringUtils.collectionToCommaDelimitedString(adminRoles);
 		return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
 	}
 
 	@Override
 	@Value("abcd1234")
 	public String getPassword() {
-		return null;
+		return adminInfo.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return customerDTO.getUserName();
+		return adminInfo.getAdminUserName();
 	}
 
 	@Override

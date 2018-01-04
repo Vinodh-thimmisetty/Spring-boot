@@ -7,11 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.vinodh.springboot.entity.Admin;
 import com.vinodh.springboot.entity.AppUser;
 
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
-	@Query("SELECT users FROM AppUser users WHERE LOWER(users.userName) LIKE LOWER(:appuserName)")
-	List<AppUser> getUserByName(@Param("appuserName") String appuserName);
+	@Query("SELECT users FROM AppUser users WHERE LOWER(users.firstName) LIKE LOWER(:firstName)")
+	List<AppUser> getUserByfirstName(@Param("firstName") String firstName);
+
+	@Query("SELECT users FROM AppUser users WHERE LOWER(users.userName) = LOWER(:appuserName)")
+	AppUser getUserByName(@Param("appuserName") String appuserName);
+ 
 }
