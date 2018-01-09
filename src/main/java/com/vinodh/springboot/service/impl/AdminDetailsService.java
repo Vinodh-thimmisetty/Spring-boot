@@ -33,4 +33,13 @@ public class AdminDetailsService implements UserDetailsService {
 		return new AdminDetails(roles, adminDTO);
 	}
 
+	public List<AdminDTO> adminDetails() {
+		return adminRepository.findAll().stream().map((eachAdmin) -> new AdminDTO(eachAdmin))
+				.collect(Collectors.toList());
+	}
+
+	public AdminDTO createNewAdmin(AdminDTO admin) {
+		return new AdminDTO(adminRepository.save(new Admin(admin)));
+	}
+
 }

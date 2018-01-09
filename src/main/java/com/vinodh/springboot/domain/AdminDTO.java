@@ -28,6 +28,7 @@ public class AdminDTO {
 	/* Copy Constructor to fetch Convert Entity to DTO */
 	public AdminDTO(Admin admin) {
 		if (Objects.nonNull(admin)) {
+			this.adminId = admin.getAdminId();
 			this.adminUserName = admin.getAdminUserName();
 			this.password = admin.getPassword();
 			this.adminFirstName = admin.getAdminFirstName();
